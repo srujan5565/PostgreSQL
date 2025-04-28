@@ -149,6 +149,7 @@ where w2.salary >= w1.salary
 );
 -- Q-35. Write an SQL query to fetch the list of employees with the same salary. **
 select w1.* from worker w1, worker w2 where w1.salary = w2.salary and w1.worker_id != w2.worker_id;
+select w1.* from worker w1 join worker w2 on w1.salary=w2.salary and w1.worker_id<>w2.worker_id;
 -- Q-36. Write an SQL query to show the second highest salary from a table using sub-query.
 select * from worker w1
 where 2 = (
@@ -191,8 +192,8 @@ select worker.department, worker.first_name, worker.salary from (select departme
 join worker on worker.department=temp.department and worker.salary=temp.max_salary;
 -- Q-46. Write an SQL query to fetch three maximum salaries from a table using a co-related subquery.
 select distinct salary from worker w1 
-where 3 > (
-	select count( distinct salary) from worker w2 where w2.salary>w1.salary
+where 3 >=(
+	select count( distinct salary) from worker w2 where w2.salary>=w1.salary
 ) order by salary desc ;
 -- Q-47. Write an SQL query to fetch three minimum salaries from a table using a co-related subquery.
 select distinct salary from worker w1 
@@ -208,5 +209,23 @@ select department,sum(salary) from worker group by department;
 select concat(w.first_name,' ',w.last_name),w.salary from (select department, max(salary) as max_salary from worker group by department) temp
 join worker w on w.department=temp.department and w.salary = temp.max_salary;
 
- 
- 
+
+create table pairs(
+A int,
+B int
+);
+insert into pairs values(1,2),(3,4),(5,3),(5,7),(2,8),(2,1),(4,3),(3,5),(7,5);
+select * from pairs;
+-- print only one pair at once without its reverse
+-- Using joins
+select p1.* from pairs p1 left join pairs p2 on p1.a=p2.b and p2.a=p1.b where p1.a<p2.a or p2.a is null;
+
+-- Using correlated subquery
+select * from pairs p1 where not exists (
+	select 1 from pairs p2 where p1.a=p2.b and p2.a=p1.b and p1.a>p2.a
+);
+
+
+
+
+
